@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/firestore_service.dart';
-import '../../services/auth_service.dart';
+
 import '../../models/user_model.dart';
+import '../../services/auth_service.dart';
+import '../../services/firestore_service.dart';
+import '../../widgets/autocomplete_dropdown.dart';
+import '../nfc/nfc_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _bloodGroupController;
   late TextEditingController _medicalConditionsController;
   late TextEditingController _allergiesController;
-  
+
   String? _selectedGender;
 
   bool _isEditing = false;
@@ -37,7 +40,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _loadUserData() {
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final firestoreService =
+        Provider.of<FirestoreService>(context, listen: false);
     final user = firestoreService.currentUser;
     print('Loading user data: ${user?.name ?? "No user"}'); // Debug
     if (user != null) {
@@ -66,7 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final firestoreService =
+        Provider.of<FirestoreService>(context, listen: false);
     final currentUser = firestoreService.currentUser;
 
     // If no user profile exists, create one
@@ -105,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       final success = await firestoreService.createUserProfile(newUser);
-      
+
       if (mounted) {
         if (success) {
           // Reload the profile
@@ -228,10 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (nameController.text.isNotEmpty &&
                   phoneController.text.isNotEmpty &&
                   relationshipController.text.isNotEmpty) {
-                final authService = Provider.of<AuthService>(context, listen: false);
+                final authService =
+                    Provider.of<AuthService>(context, listen: false);
                 final firestoreService =
                     Provider.of<FirestoreService>(context, listen: false);
-                
+
                 final navigator = Navigator.of(context);
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -247,12 +253,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
 
                 if (!mounted) return;
-                
+
                 // Reload user data to show the new contact
                 if (success) {
                   await firestoreService.getUserProfile(authService.user!.uid);
                 }
-                
+
                 navigator.pop();
                 if (success) {
                   setState(() {});
@@ -266,7 +272,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(
-                        firestoreService.errorMessage ?? 'Failed to add contact',
+                        firestoreService.errorMessage ??
+                            'Failed to add contact',
                       ),
                       backgroundColor: Colors.red,
                     ),
@@ -285,24 +292,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           if (!_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit),
+            TextButton(
               onPressed: () {
                 setState(() {
                   _isEditing = true;
                 });
               },
+              child: const Text(
+                'Edit',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           if (_isEditing)
-            IconButton(
-              icon: const Icon(Icons.save),
+            TextButton(
               onPressed: _saveProfile,
+              child: const Text(
+                'Save',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
         ],
       ),
@@ -311,29 +341,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final user = firestoreService.currentUser;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Profile header
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.person, size: 50, color: Colors.white),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      shape: BoxShape.circle,
+                      border:
+                          Border.all(color: const Color(0xFFE0E0E0), width: 2),
+                    ),
+                    child: const Icon(Icons.person_outline,
+                        size: 40, color: Colors.black),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     user?.name ?? 'Your Name',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   Text(
                     user?.email ?? 'your.email@example.com',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF757575),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
@@ -355,7 +397,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       prefixIcon: const Icon(Icons.person),
                       border: const OutlineInputBorder(),
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
                     validator: (value) =>
                         value?.isEmpty ?? true ? 'Name is required' : null,
@@ -370,7 +414,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       prefixIcon: const Icon(Icons.phone),
                       border: const OutlineInputBorder(),
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
                     validator: (value) =>
                         value?.isEmpty ?? true ? 'Phone is required' : null,
@@ -386,7 +432,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       border: const OutlineInputBorder(),
                       hintText: 'Enter your age',
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
@@ -406,18 +454,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       prefixIcon: const Icon(Icons.person_outline),
                       border: const OutlineInputBorder(),
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
                     items: const [
                       DropdownMenuItem(value: 'Male', child: Text('Male')),
                       DropdownMenuItem(value: 'Female', child: Text('Female')),
                       DropdownMenuItem(value: 'Other', child: Text('Other')),
                     ],
-                    onChanged: _isEditing ? (value) {
-                      setState(() {
-                        _selectedGender = value;
-                      });
-                    } : null,
+                    onChanged: _isEditing
+                        ? (value) {
+                            setState(() {
+                              _selectedGender = value;
+                            });
+                          }
+                        : null,
                   ),
                   const SizedBox(height: 32),
 
@@ -430,17 +482,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
+                  AutocompleteTextField(
                     controller: _bloodGroupController,
+                    items: bloodGroups,
                     readOnly: !_isEditing,
                     decoration: InputDecoration(
                       labelText: 'Blood Group',
                       prefixIcon: const Icon(Icons.bloodtype),
                       border: const OutlineInputBorder(),
-                      hintText: 'e.g., O+, A-, B+',
+                      hintText: 'Select or type blood group',
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
+                    validator: (val) {
+                      if (val == null || val.trim().isEmpty) {
+                        return null; // Optional field
+                      }
+                      // Check if it's a valid blood group
+                      if (!bloodGroups.contains(val.trim())) {
+                        return 'Please select a valid blood group';
+                      }
+                      return null;
+                    },
+                    onItemSelect: (selected) {
+                      // Update controller when item is selected
+                      _bloodGroupController.text = selected;
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -453,7 +522,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       border: const OutlineInputBorder(),
                       hintText: 'Any existing medical conditions',
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -467,7 +538,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       border: const OutlineInputBorder(),
                       hintText: 'Any known allergies',
                       filled: !_isEditing,
-                      fillColor: !_isEditing ? Colors.grey.withValues(alpha: 0.1) : null,
+                      fillColor: !_isEditing
+                          ? Colors.grey.withValues(alpha: 0.1)
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Write to NFC Button
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NfcSettingsScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.nfc, size: 20),
+                    label: const Text('Write to NFC Tag'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(48),
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(
+                          color: Color(0xFFE0E0E0), width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -502,7 +598,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     )
                   else
-                    ...(user?.emergencyContacts ?? []).asMap().entries.map((entry) {
+                    ...(user?.emergencyContacts ?? [])
+                        .asMap()
+                        .entries
+                        .map((entry) {
                       final index = entry.key;
                       final contact = entry.value;
                       return Card(
@@ -520,10 +619,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
-                              final authService =
-                                  Provider.of<AuthService>(context, listen: false);
-                              final scaffoldMessenger = ScaffoldMessenger.of(context);
-                              
+                              final authService = Provider.of<AuthService>(
+                                  context,
+                                  listen: false);
+                              final scaffoldMessenger =
+                                  ScaffoldMessenger.of(context);
+
                               final success =
                                   await firestoreService.removeEmergencyContact(
                                 authService.user!.uid,

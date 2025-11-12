@@ -16,6 +16,20 @@ class _NFCReadScreenState extends State<NFCReadScreen> {
   bool _isReading = false;
   NFCDataModel? _readData;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkNfcAvailability();
+  }
+
+  Future<void> _checkNfcAvailability() async {
+    final nfcService = Provider.of<NFCService>(context, listen: false);
+    await nfcService.isNfcAvailable();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   Future<void> _readTag() async {
     final nfcService = Provider.of<NFCService>(context, listen: false);
 
@@ -142,6 +156,183 @@ class _NFCReadScreenState extends State<NFCReadScreen> {
 
             // Read Data Display
             if (_readData != null) ...[
+              // If URL detected, show Open in Browser button
+              if (_readData!.bloodGroup != null && 
+                  _readData!.bloodGroup!.startsWith('http')) ...[
+                // Show offline emergency data if available
+                if (_readData!.userPhone.contains('🆘')) ...[
+                  Card(
+                    color: Colors.red[50],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.local_hospital,
+                                color: Colors.red,
+                                size: 32,
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Offline Emergency Data',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.shade200),
+                            ),
+                            child: Text(
+                              _readData!.userPhone,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontFamily: 'monospace',
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                      ClipboardData(text: _readData!.userPhone),
+                                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Emergency data copied!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.copy, size: 18),
+                                  label: const Text('Copy All'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                
+                // Show URL card
+                Card(
+                  color: Colors.green[50],
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.link,
+                          color: Colors.green,
+                          size: 48,
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'TAGit Profile URL',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _readData!.bloodGroup!,
+                          style: const TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            try {
+                              final urlString = _readData!.bloodGroup!;
+                              print('Attempting to open URL: $urlString');
+                              
+                              final url = Uri.parse(urlString);
+                              print('Parsed URI: $url');
+                              
+                              final canLaunch = await canLaunchUrl(url);
+                              print('Can launch URL: $canLaunch');
+                              
+                              if (canLaunch) {
+                                final launched = await launchUrl(
+                                  url, 
+                                  mode: LaunchMode.externalApplication,
+                                );
+                                print('Launch result: $launched');
+                                
+                                if (!launched && mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to launch URL'),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Cannot open URL: $urlString'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            } catch (e) {
+                              print('Error opening URL: $e');
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.open_in_browser),
+                          label: const Text('Open Profile in Browser'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              
               const Text(
                 'Emergency Profile',
                 style: TextStyle(

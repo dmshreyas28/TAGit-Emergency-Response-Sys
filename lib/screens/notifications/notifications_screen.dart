@@ -1,153 +1,117 @@
 import 'package:flutter/material.dart';
-import '../../utils/app_theme.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Notification settings coming soon'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            tooltip: 'Notification Settings',
+    return Container(
+      color: const Color(0xFFF5F5F5),
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Notifications',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildNotificationCard(
+            icon: Icons.emergency_outlined,
+            title: 'SOS Alert Sent',
+            message: 'Emergency contacts notified',
+            time: '2 hours ago',
+            color: const Color(0xFFFF0000),
+          ),
+          _buildNotificationCard(
+            icon: Icons.edit_outlined,
+            title: 'Profile Updated',
+            message: 'Medical information updated',
+            time: '1 day ago',
+            color: const Color(0xFF2196F3),
+          ),
+          _buildNotificationCard(
+            icon: Icons.login_outlined,
+            title: 'New Login',
+            message: 'Logged in from new device',
+            time: '3 days ago',
+            color: const Color(0xFFFF9800),
+          ),
+          _buildNotificationCard(
+            icon: Icons.nfc,
+            title: 'NFC Tag Written',
+            message: 'Emergency data saved to tag',
+            time: '1 week ago',
+            color: const Color(0xFF4CAF50),
           ),
         ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Empty State Icon
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: AppTheme.accentBlue.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.notifications_none_rounded,
-                  size: 80,
-                  color: AppTheme.accentBlue.withOpacity(0.5),
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-              
-              // Title
-              Text(
-                'No Notifications',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textDark,
-                ),
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Description
-              Text(
-                'You\'re all caught up!\nWe\'ll notify you when something important happens.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppTheme.textGrey,
-                  height: 1.5,
-                ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Info Cards
-              _buildInfoCard(
-                context,
-                icon: Icons.emergency_rounded,
-                title: 'Emergency Alerts',
-                description: 'Get notified about emergency responses',
-              ),
-              
-              const SizedBox(height: 12),
-              
-              _buildInfoCard(
-                context,
-                icon: Icons.person_add_outlined,
-                title: 'Contact Requests',
-                description: 'Receive notifications from emergency contacts',
-              ),
-              
-              const SizedBox(height: 12),
-              
-              _buildInfoCard(
-                context,
-                icon: Icons.info_outline,
-                title: 'App Updates',
-                description: 'Stay informed about new features',
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildInfoCard(
-    BuildContext context, {
+  static Widget _buildNotificationCard({
     required IconData icon,
     required String title,
-    required String description,
+    required String message,
+    required String time,
+    required Color color,
   }) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.accentBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                color: AppTheme.accentBlue,
-                size: 24,
-              ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.textGrey,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF757575),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  time,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

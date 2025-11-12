@@ -15,9 +15,16 @@ class AuthService extends ChangeNotifier {
   AuthService() {
     // Listen to auth state changes
     _auth.authStateChanges().listen((User? user) {
+      print('🔐 Auth State Changed: ${user?.email ?? "signed out"}');
       _user = user;
       notifyListeners();
     });
+
+    // Set initial user if already logged in
+    _user = _auth.currentUser;
+    if (_user != null) {
+      print('🔐 Initial User: ${_user!.email}');
+    }
   }
 
   // Sign up with email and password
@@ -30,7 +37,8 @@ class AuthService extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      final UserCredential credential = await _auth.createUserWithEmailAndPassword(
+      final UserCredential credential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -42,6 +50,10 @@ class AuthService extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       _isLoading = false;
       _errorMessage = _getErrorMessage(e);
+      print('FirebaseAuthException during signup:');
+      print('Code: ${e.code}');
+      print('Message: ${e.message}');
+      print('Full error: $e');
       notifyListeners();
       return null;
     } catch (e) {
@@ -69,12 +81,17 @@ class AuthService extends ChangeNotifier {
       );
 
       _user = credential.user;
+      print('✅ Login Success: ${_user?.email}');
       _isLoading = false;
       notifyListeners();
       return _user;
     } on FirebaseAuthException catch (e) {
       _isLoading = false;
       _errorMessage = _getErrorMessage(e);
+      print('FirebaseAuthException during login:');
+      print('Code: ${e.code}');
+      print('Message: ${e.message}');
+      print('Full error: $e');
       notifyListeners();
       return null;
     } catch (e) {
@@ -94,12 +111,14 @@ class AuthService extends ChangeNotifier {
 
       await _auth.signOut();
       _user = null;
+      print('🚪 Logout Success');
 
       _isLoading = false;
       notifyListeners();
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Failed to sign out';
+      print('❌ Logout Error: $e');
       notifyListeners();
     }
   }
@@ -154,6 +173,8 @@ class AuthService extends ChangeNotifier {
         return 'Invalid email or password';
       case 'network-request-failed':
         return 'Network error. Please check your connection';
+      case 'api-key-not-valid.-please-pass-a-valid-api-key.':
+        return 'Firebase configuration error. Please contact support.';
       default:
         return 'Authentication failed. Please try again';
     }

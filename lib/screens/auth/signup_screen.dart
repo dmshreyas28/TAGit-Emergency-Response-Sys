@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
 import '../../services/firestore_service.dart';
-import '../../models/user_model.dart';
-import '../home/home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -36,7 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final firestoreService =
+        Provider.of<FirestoreService>(context, listen: false);
 
     // Create auth account
     final user = await authService.signUp(
@@ -60,13 +61,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (success && mounted) {
         // Load the user profile we just created
         await firestoreService.getUserProfile(user.uid);
-        
-        if (!mounted) return;
-        
-        // Navigate to home
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+
+        // Don't navigate manually - let main.dart's Consumer handle it automatically
+        // This prevents navigation conflicts and ensures clean state
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -190,7 +187,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -247,12 +246,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Sign up button
                 Consumer<AuthService>(
                   builder: (context, authService, _) {
-                    return ElevatedButton(
+                    return FilledButton(
                       onPressed: authService.isLoading ? null : _handleSignUp,
-                      style: ElevatedButton.styleFrom(
+                      style: FilledButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -268,7 +268,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             )
                           : const Text(
                               'Create Account',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                     );
                   },

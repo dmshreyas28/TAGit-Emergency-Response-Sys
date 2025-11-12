@@ -8,8 +8,10 @@ class UserModel {
   final int? age;
   final String? gender;
   final String? bloodGroup;
+  final String? address;
   final String? medicalConditions;
   final String? allergies;
+  final String? medications;
   final List<EmergencyContact> emergencyContacts;
   final List<MedicalDocument> medicalDocuments;
   final DateTime createdAt;
@@ -23,8 +25,10 @@ class UserModel {
     this.age,
     this.gender,
     this.bloodGroup,
+    this.address,
     this.medicalConditions,
     this.allergies,
+    this.medications,
     this.emergencyContacts = const [],
     this.medicalDocuments = const [],
     required this.createdAt,
@@ -41,8 +45,10 @@ class UserModel {
       'age': age,
       'gender': gender,
       'bloodGroup': bloodGroup,
+      'address': address,
       'medicalConditions': medicalConditions,
       'allergies': allergies,
+      'medications': medications,
       'emergencyContacts': emergencyContacts.map((c) => c.toMap()).toList(),
       'medicalDocuments': medicalDocuments.map((d) => d.toMap()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
@@ -60,8 +66,10 @@ class UserModel {
       age: map['age'],
       gender: map['gender'],
       bloodGroup: map['bloodGroup'],
+      address: map['address'],
       medicalConditions: map['medicalConditions'],
       allergies: map['allergies'],
+      medications: map['medications'],
       emergencyContacts: (map['emergencyContacts'] as List<dynamic>?)
               ?.map((c) => EmergencyContact.fromMap(c as Map<String, dynamic>))
               .toList() ??
@@ -84,8 +92,10 @@ class UserModel {
     int? age,
     String? gender,
     String? bloodGroup,
+    String? address,
     String? medicalConditions,
     String? allergies,
+    String? medications,
     List<EmergencyContact>? emergencyContacts,
     List<MedicalDocument>? medicalDocuments,
     DateTime? createdAt,
@@ -99,8 +109,10 @@ class UserModel {
       age: age ?? this.age,
       gender: gender ?? this.gender,
       bloodGroup: bloodGroup ?? this.bloodGroup,
+      address: address ?? this.address,
       medicalConditions: medicalConditions ?? this.medicalConditions,
       allergies: allergies ?? this.allergies,
+      medications: medications ?? this.medications,
       emergencyContacts: emergencyContacts ?? this.emergencyContacts,
       medicalDocuments: medicalDocuments ?? this.medicalDocuments,
       createdAt: createdAt ?? this.createdAt,
