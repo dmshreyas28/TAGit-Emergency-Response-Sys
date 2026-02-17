@@ -1,0 +1,143 @@
+{
+  "folders": [
+    {
+      "name": "📱 TAGit Mobile App (Flutter)",
+      "path": "tagit_app"
+    },
+    {
+      "name": "🌐 TAGit Website (Next.js)",
+      "path": "tagit_website"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.dart_tool": true,
+      "**/build": true,
+      "**/.gradle": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/build": true,
+      "**/.dart_tool": true,
+      "**/dist": true,
+      "**/.next": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "[dart]": {
+      "editor.defaultFormatter": "Dart-Code.dart-code",
+      "editor.formatOnSave": true,
+      "editor.rulers": [80]
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "dart.flutterSdkPath": null,
+    "typescript.tsdk": "tagit_website/node_modules/typescript/lib"
+  },
+  "extensions": {
+    "recommendations": [
+      "Dart-Code.flutter",
+      "Dart-Code.dart-code",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+      "formulahendry.auto-rename-tag",
+      "christian-kohler.path-intellisense",
+      "usernamehw.errorlens"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Flutter: Run on Device",
+        "type": "dart",
+        "request": "launch",
+        "program": "tagit_app/lib/main.dart"
+      },
+      {
+        "name": "Flutter: Debug Mode",
+        "type": "dart",
+        "request": "launch",
+        "program": "tagit_app/lib/main.dart",
+        "flutterMode": "debug"
+      },
+      {
+        "name": "Flutter: Profile Mode",
+        "type": "dart",
+        "request": "launch",
+        "program": "tagit_app/lib/main.dart",
+        "flutterMode": "profile"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Flutter: Clean",
+        "type": "shell",
+        "command": "flutter clean",
+        "options": {
+          "cwd": "${workspaceFolder:📱 TAGit Mobile App (Flutter)}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Flutter: Get Dependencies",
+        "type": "shell",
+        "command": "flutter pub get",
+        "options": {
+          "cwd": "${workspaceFolder:📱 TAGit Mobile App (Flutter)}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Website: Install Dependencies",
+        "type": "shell",
+        "command": "npm install",
+        "options": {
+          "cwd": "${workspaceFolder:🌐 TAGit Website (Next.js)}"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Website: Dev Server",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": {
+          "cwd": "${workspaceFolder:🌐 TAGit Website (Next.js)}"
+        },
+        "isBackground": true,
+        "problemMatcher": []
+      },
+      {
+        "label": "Website: Build",
+        "type": "shell",
+        "command": "npm run build",
+        "options": {
+          "cwd": "${workspaceFolder:🌐 TAGit Website (Next.js)}"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
+}

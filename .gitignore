@@ -1,0 +1,21 @@
+# Git backup folders
+*.git.backup/
+.git.backup/
+
+# Build outputs
+**/build/
+**/node_modules/
+**/.dart_tool/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
