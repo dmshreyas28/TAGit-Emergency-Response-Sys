@@ -152,7 +152,7 @@ class NFCService extends ChangeNotifier {
             // Check if message will fit
             final messageSize = message.byteLength;
             if (messageSize > ndef.maxSize) {
-              throw Exception('Data too large for tag (${messageSize} bytes > ${ndef.maxSize} bytes)');
+              throw Exception('Data too large for tag ($messageSize bytes > ${ndef.maxSize} bytes)');
             }
 
             // Write to tag

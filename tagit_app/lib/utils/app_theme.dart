@@ -103,8 +103,9 @@ class AppTheme {
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(double.infinity, 48)),
         backgroundColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.disabled))
+          if (states.contains(WidgetState.disabled)) {
             return primaryCoralLight.withOpacity(0.5);
+          }
           return primaryCoral;
         }),
         foregroundColor: const WidgetStatePropertyAll(Colors.white),
